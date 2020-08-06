@@ -2,6 +2,7 @@ package com.example.meaning4;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.common.io.ByteStreams;
 import com.microsoft.azure.cognitiveservices.vision.computervision.*;
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.*;
@@ -11,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +25,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import static com.example.meaning4.R.id.bottomSheet;
 
 public class findMeaning extends AppCompatActivity {
 
@@ -43,34 +47,48 @@ public class findMeaning extends AppCompatActivity {
         int[] viewCoords = new int[2];
         imageView.getLocationOnScreen(viewCoords);
         Log.i("coords", viewCoords[0]+"   "+viewCoords[1]);
+        wordAPI i = new wordAPI();
+
+        View bottomSheet = findViewById(R.id.bottomSheet);
+        final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        ComputerVisionClient compVisClient = ComputerVisionManager.authenticate(subscriptionKey).withEndpoint(endpoint);
-                        Log.i("a", "\nAzure Cognitive Services Computer Vision - Java Quickstart Sample");
-                        RecognizeTextOCRLocal(compVisClient);
-                        return null;
-                    }
-                };
-                task.execute();
-
-
+            public void onClick(View v) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
+
+        try {
+            String x = i.execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                ComputerVisionClient compVisClient = ComputerVisionManager.authenticate(subscriptionKey).withEndpoint(endpoint);
+                Log.i("a", "\nAzure Cognitive Services Computer Vision - Java Quickstart Sample");
+                RecognizeTextOCRLocal(compVisClient);
+                return null;
+            }
+        };
+        task.execute();
+
+
+
+
 
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        TextView textView2 = findViewById(R.id.textView3);
         int x = (int)event.getX();
         int y = (int) event.getY();
         y -= getStatusBarHeight();
-        textView2.setText(x+"   "+y);
         int i = 1;
         for(int k = 0; k < listOfLists.size(); k++){
             if(x > listOfLists.get(k).get(0) && x < listOfLists.get(k).get(2) ){
@@ -142,8 +160,6 @@ public class findMeaning extends AppCompatActivity {
                     Log.i("a", "\n");
                 }
             }
-            TextView textView = findViewById(R.id.textView98);
-            textView.setText(res);
         }catch (Exception e){
             Log.i("a", e.toString());
         }

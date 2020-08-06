@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="16dp"
     android:layout_height="match_parent"
     tools:context=".findMeaning">
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/image98"
@@ -22,43 +30,27 @@
         android:id="@+id/button98"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:layout_marginEnd="16dp"
+        android:text="Find Meaning"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/image98"
-        app:layout_constraintVertical_bias="0.959" />
-
-    <TextView
-        android:id="@+id/textView98"
-        android:layout_width="match_parent"
-        android:layout_height="345dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/button98"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/choosenWord"
         app:layout_constraintTop_toBottomOf="@+id/image98" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="113dp"
-        android:layout_height="56dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button98"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button98" />
 
     <TextView
         android:id="@+id/choosenWord"
         android:layout_width="184dp"
-        android:layout_height="93dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="@+id/button98"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.889"
-        app:layout_constraintStart_toStartOf="@+id/textView98"
-        app:layout_constraintTop_toTopOf="@+id/textView98"
-        app:layout_constraintVertical_bias="0.525" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image98" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include layout="@layout/bottom_sheet_persistent" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

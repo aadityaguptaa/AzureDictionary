@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:paddingBottom="32dp"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="16dp"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+
+    <Button
+        android:id="@+id/findAnotherMeaning"
+        android:layout_width="329dp"
+        android:layout_height="67dp"
+        android:background="#000000"
+        android:fontFamily="@font/open_sans_light"
+        android:text="find another meaning"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/wordsheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans_light"
+        android:text="hello"
+        android:textColor="#474545"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/findAnotherMeaning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.187" />
+
+    <ImageView
+        android:id="@+id/speaker"
+        android:layout_width="50dp"
+        android:layout_height="67dp"
+        android:layout_marginStart="48dp"
+        android:background="#00FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/wordsheet"
+        app:layout_constraintEnd_toStartOf="@+id/wordsheet"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/wordsheet"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/pngwave" />
+
+    <TextView
+        android:id="@+id/def1"
+        android:layout_width="329dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans"
+        android:text="used as a greeting or to begin a phone conversation"
+        android:textColor="#030303"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/findAnotherMeaning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wordsheet"
+        app:layout_constraintVertical_bias="0.093" />
+
+    <TextView
+        android:id="@+id/exa1"
+        android:layout_width="329dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans"
+        android:text="|  hello, what's all this then?"
+        android:textColor="#686262"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/findAnotherMeaning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/def1"
+        app:layout_constraintVertical_bias="0.18" />
+
+    <TextView
+        android:id="@+id/def2"
+        android:layout_width="329dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans"
+        android:text="used as a cry to attract someone's attention"
+        android:textColor="#030303"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/findAnotherMeaning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exa1"
+        app:layout_constraintVertical_bias="0.065" />
+
+    <TextView
+        android:id="@+id/exa2"
+        android:layout_width="329dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans"
+        android:text="|  ‘Hello below!’ he cried"
+        android:textColor="#686262"
+        android:textSize="18sp"
+
+        app:layout_constraintBottom_toTopOf="@+id/findAnotherMeaning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/def2"
+        app:layout_constraintVertical_bias="0.061" />
+
+    <TextView
+        android:id="@+id/etymologies"
+        android:layout_width="329dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/open_sans"
+        android:text="Etymologies"
+        android:textColor="#030303"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toTopOf="@+id/findAnotherMeaning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exa2"
+        app:layout_constraintVertical_bias="0.063" />
+
+    <TextView
+        android:id="@+id/etydef"
+        android:layout_width="329dp"
+        android:layout_height="wrap_content"
+        android:text="early 19th century: variant of earlier hollo; related to holla"
+        android:textColor="#292626"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toTopOf="@+id/findAnotherMeaning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etymologies"
+        app:layout_constraintVertical_bias="0.124" />
+
+    <TextView
+        android:id="@+id/knowmore"
+        android:layout_width="329dp"
+        android:layout_height="wrap_content"
+        android:text="Know more?"
+        android:textColor="#050505"
+        android:textColorLink="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/findAnotherMeaning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etydef"
+        app:layout_constraintVertical_bias="0.503" />
+</androidx.constraintlayout.widget.ConstraintLayout>
