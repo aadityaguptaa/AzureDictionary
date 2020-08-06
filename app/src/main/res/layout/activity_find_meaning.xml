@@ -49,4 +49,16 @@
         app:layout_constraintEnd_toStartOf="@+id/button98"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/button98" />
+
+    <TextView
+        android:id="@+id/choosenWord"
+        android:layout_width="184dp"
+        android:layout_height="93dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/button98"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.889"
+        app:layout_constraintStart_toStartOf="@+id/textView98"
+        app:layout_constraintTop_toTopOf="@+id/textView98"
+        app:layout_constraintVertical_bias="0.525" />
 </androidx.constraintlayout.widget.ConstraintLayout>
