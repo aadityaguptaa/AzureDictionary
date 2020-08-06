@@ -26,7 +26,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import static com.example.meaning4.R.id.bottomSheet;
+import static com.example.meaning4.R.id.etydef;
+import static com.example.meaning4.R.id.etymologies;
+import static com.example.meaning4.R.id.wordsheet;
 
 public class findMeaning extends AppCompatActivity {
 
@@ -35,6 +42,8 @@ public class findMeaning extends AppCompatActivity {
     public String statusBarHeight = "";
     List<List<Integer>> listOfLists = new ArrayList<>();
     List<String> listOfWords = new ArrayList<>();
+    public int selectedInt;
+    public String selectedString;
 
 
     @Override
@@ -47,24 +56,116 @@ public class findMeaning extends AppCompatActivity {
         int[] viewCoords = new int[2];
         imageView.getLocationOnScreen(viewCoords);
         Log.i("coords", viewCoords[0]+"   "+viewCoords[1]);
-        wordAPI i = new wordAPI();
 
         View bottomSheet = findViewById(R.id.bottomSheet);
         final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        Button findAnotherMeaning = findViewById(R.id.findAnotherMeaning);
+        findAnotherMeaning.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+            }
+        });
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    wordAPI i = new wordAPI();
+                    String x = i.execute(listOfWords.get(selectedInt)).get();
+                    JSONObject jsonObject = new JSONObject(x);
+                    String word = jsonObject.getString("id");
+                    TextView wordSheet = findViewById(R.id.wordsheet);
+                    wordSheet.setText(word);
+                    JSONArray results = jsonObject.getJSONArray("results");
+                    JSONObject etyq = results.getJSONObject(0);
+                    JSONArray lexicalEntries = etyq.getJSONArray("lexicalEntries");
+                    JSONObject etyw = lexicalEntries.getJSONObject(0);
+                    JSONArray entries = etyw.getJSONArray("entries");
+                    JSONObject etye = entries.getJSONObject(0);
+                    try {
+                        JSONArray ety = etye.getJSONArray("etymologies");
+                        String etymologies = ety.getString(0);
+                        TextView etymo = findViewById(R.id.etydef);
+                        etymo.setVisibility(View.VISIBLE);
+                        TextView tre = findViewById(R.id.etymologies);
+                        tre.setVisibility(View.VISIBLE);
+                        etymo.setText(etymologies);
+                    }catch (Exception e){
+                        TextView tre = findViewById(etymologies);
+                        tre.setVisibility(View.INVISIBLE);
+                        TextView tre2 = findViewById(etydef);
+                        tre2.setVisibility(View.INVISIBLE);
+
+                        Log.e("e", e.toString());
+                    }
+
+                    JSONArray audioLinkarray = etye.getJSONArray("pronunciations");
+                    JSONObject audioLinkObject = audioLinkarray.getJSONObject(0);
+                    String audioLink = audioLinkObject.getString("audioFile");
+                    JSONArray definitionarray = etye.getJSONArray("senses");
+                    JSONObject definitionObject = definitionarray.getJSONObject(0);
+                    JSONArray firstdefArr = definitionObject.getJSONArray("definitions");
+                    String firstDefinition = firstdefArr.getString(0);
+
+                    TextView def1 = findViewById(R.id.def1);
+                    if(firstDefinition.isEmpty()){
+                        def1.setVisibility(View.INVISIBLE);
+                    }else {
+                        def1.setVisibility(View.VISIBLE);
+                    }
+                    def1.setText(firstDefinition);
+                    JSONArray firstexArr = definitionObject.getJSONArray("examples");
+                    JSONObject firstexob = firstexArr.getJSONObject(0);
+                    String firstExample = "|   ";
+                    firstExample += firstexob.getString("text");
+                    TextView exa1 = findViewById(R.id.exa1);
+                    exa1.setText(firstExample);
+                    try {
+                        JSONArray ssde = definitionObject.getJSONArray("subsenses");
+                        JSONObject wer = ssde.getJSONObject(0);
+                        JSONArray asd = wer.getJSONArray("definitions");
+                        String secondDefinition = asd.getString(0);
+                        TextView def2 = findViewById(R.id.def2);
+                        if(secondDefinition.isEmpty()){
+                            def2.setVisibility(View.INVISIBLE);
+                        }else {
+                            def2.setVisibility(View.VISIBLE);
+                        }
+                        def2.setText(secondDefinition);
+                        JSONArray fds = wer.getJSONArray("examples");
+                        JSONObject www = fds.getJSONObject(0);
+                        String secondExample = "|   ";
+                        secondExample += www.getString("text");
+                        TextView exa2 = findViewById(R.id.exa2);
+                        if(secondExample.isEmpty()){
+                            exa2.setVisibility(View.INVISIBLE);
+                        }else {
+                            exa2.setVisibility(View.VISIBLE);
+                        }
+                        exa2.setText(secondExample);
+                    }catch (Exception e){
+                        TextView dd = findViewById(R.id.def2);
+                        dd.setVisibility(View.INVISIBLE);
+                        TextView dd2 = findViewById(R.id.exa2);
+                        dd2.setVisibility(View.INVISIBLE);
+                    }
+
+
+
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
             }
         });
 
-        try {
-            String x = i.execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
             @Override
@@ -96,6 +197,7 @@ public class findMeaning extends AppCompatActivity {
                     Log.i("index", String.valueOf(k)+" "+i);
                     TextView choosenWord = findViewById(R.id.choosenWord);
                     choosenWord.setText(listOfWords.get(k));
+                    selectedInt = k;
                     i+=1;
 
                     break;
@@ -116,7 +218,7 @@ public class findMeaning extends AppCompatActivity {
         Log.i("a", "RECOGNIZE PRINTED TEXT");
 
         // Replace this string with the path to your own image.
-        Bitmap icon = BitmapFactory.decodeResource(getResources(),R.drawable.ggg);
+        Bitmap icon = BitmapFactory.decodeResource(getResources(),R.drawable.phone);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         icon.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());

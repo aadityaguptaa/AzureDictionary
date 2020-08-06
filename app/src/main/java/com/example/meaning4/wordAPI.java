@@ -10,7 +10,7 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class wordAPI extends AsyncTask<Void, Void, String> {
+public class wordAPI extends AsyncTask<String, Void, String> {
 
     String app_id = "f36b5505";
     String app_key = "7b2750c26a975f04569270524cbab202";
@@ -21,9 +21,9 @@ public class wordAPI extends AsyncTask<Void, Void, String> {
 
 
     @Override
-    protected String doInBackground(Void... voids) {
+    protected String doInBackground(String... strings) {
 
-        String url = "https://od-api.oxforddictionaries.com:443/api/v2/entries/" + language + "/" + word_id.toLowerCase();
+        String url = "https://od-api.oxforddictionaries.com:443/api/v2/entries/" + language + "/" + strings[0].toLowerCase();
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("app_id", app_id)
