@@ -1,6 +1,10 @@
 package com.example.meaning4;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.common.io.ByteStreams;
@@ -10,15 +14,25 @@ import com.microsoft.azure.cognitiveservices.vision.computervision.models.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,10 +58,16 @@ public class findMeaning extends AppCompatActivity {
     List<String> listOfWords = new ArrayList<>();
     public int selectedInt;
     public String selectedString;
+    public Bitmap mSelectedImage;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_TAKE_PHOTO = 1;
+    public String currentPhotoPath;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_meaning);
         Button button = findViewById(R.id.button98);
@@ -65,6 +85,34 @@ public class findMeaning extends AppCompatActivity {
             public void onClick(View v) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
+            }
+        });
+
+        //Request For Camera Permission
+        if(ContextCompat.checkSelfPermission(findMeaning.this, Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(findMeaning.this, new String[]{
+                    Manifest.permission.CAMERA
+            }, 100);
+        }
+
+        ImageView cameraClick = findViewById(R.id.floating_action_button);
+        cameraClick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String fileName = "photo";
+                File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+                try{
+                    File imageFile = File.createTempFile(fileName, ".jpg", storageDirectory);
+                    currentPhotoPath = imageFile.getAbsolutePath();
+
+                    Uri imageUri = FileProvider.getUriForFile(findMeaning.this, "com.example.meaning4.fileprovider", imageFile);
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(intent, 1);
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
             }
         });
         button.setOnClickListener(new View.OnClickListener() {
@@ -167,17 +215,40 @@ public class findMeaning extends AppCompatActivity {
         });
 
 
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                ComputerVisionClient compVisClient = ComputerVisionManager.authenticate(subscriptionKey).withEndpoint(endpoint);
-                Log.i("a", "\nAzure Cognitive Services Computer Vision - Java Quickstart Sample");
-                RecognizeTextOCRLocal(compVisClient);
-                return null;
-            }
-        };
-        task.execute();
 
+
+
+
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        Log.i("tyu", "00");
+        Log.i("tyu", String.valueOf(requestCode));
+
+        if (resultCode == RESULT_OK && requestCode == 1) {
+            Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath);
+            if (bitmap != null) {
+                Log.i("tyu", "02");
+                ImageView im = findViewById(R.id.image98);
+                mSelectedImage = Bitmap.createScaledBitmap(bitmap, im.getWidth(), im.getHeight(), true);
+                im.setImageBitmap(mSelectedImage);
+
+                AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        ComputerVisionClient compVisClient = ComputerVisionManager.authenticate(subscriptionKey).withEndpoint(endpoint);
+                        Log.i("a", "\nAzure Cognitive Services Computer Vision - Java Quickstart Sample");
+                        RecognizeTextOCRLocal(compVisClient);
+                        return null;
+                    }
+                };
+                task.execute();
+            }
+        }
 
 
 
@@ -221,21 +292,8 @@ public class findMeaning extends AppCompatActivity {
 
         // Replace this string with the path to your own image.
         Bitmap icon4 = BitmapFactory.decodeResource(getResources(),R.drawable.camera6);
-        final ImageView image98 = findViewById(R.id.image98);
-        View parent = (View)image98.getParent();
-        int width = image98.getWidth();
+        Bitmap icon = mSelectedImage;
 
-        Log.i("wittthy", String.valueOf(width) + " "+String.valueOf(image98.getHeight()));
-        final Bitmap icon = Bitmap.createScaledBitmap(icon4, image98.getWidth(), image98.getHeight(), false);
-        runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-
-                image98.setImageBitmap(icon);
-
-            }
-        });
 
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -294,6 +352,31 @@ public class findMeaning extends AppCompatActivity {
         }
 
         return result;
+    }
+
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
     }
 
 }
