@@ -196,7 +196,9 @@ public class findMeaning extends AppCompatActivity {
                 if(y > listOfLists.get(k).get(1) && y < listOfLists.get(k).get(3) ){
                     Log.i("index", String.valueOf(k)+" "+i);
                     TextView choosenWord = findViewById(R.id.choosenWord);
-                    choosenWord.setText(listOfWords.get(k));
+                    TextView worder = findViewById(R.id.worder);
+                    worder.setVisibility(View.VISIBLE);
+                    choosenWord.setText(listOfWords.get(k).toUpperCase());
                     selectedInt = k;
                     i+=1;
 
@@ -218,7 +220,24 @@ public class findMeaning extends AppCompatActivity {
         Log.i("a", "RECOGNIZE PRINTED TEXT");
 
         // Replace this string with the path to your own image.
-        Bitmap icon = BitmapFactory.decodeResource(getResources(),R.drawable.phone);
+        Bitmap icon4 = BitmapFactory.decodeResource(getResources(),R.drawable.camera6);
+        final ImageView image98 = findViewById(R.id.image98);
+        View parent = (View)image98.getParent();
+        int width = image98.getWidth();
+
+        Log.i("wittthy", String.valueOf(width) + " "+String.valueOf(image98.getHeight()));
+        final Bitmap icon = Bitmap.createScaledBitmap(icon4, image98.getWidth(), image98.getHeight(), false);
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                image98.setImageBitmap(icon);
+
+            }
+        });
+
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         icon.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());

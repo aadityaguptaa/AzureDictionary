@@ -9,45 +9,71 @@
     tools:context=".findMeaning">
 
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#FFFFFF">
 
         <ImageView
             android:id="@+id/image98"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="1080px"
+            android:layout_height="1425px"
+            android:scaleType="centerInside"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/phone" />
+            app:layout_constraintVertical_bias="0.0" />
 
-    <Button
-        android:id="@+id/button98"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:text="Find Meaning"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/choosenWord"
-        app:layout_constraintTop_toBottomOf="@+id/image98" />
+        <Button
+            android:id="@+id/button98"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="132dp"
+            android:layout_height="70dp"
+            android:layout_marginEnd="16dp"
+            android:background="#FCFCFC"
+            android:fontFamily="@font/open_sans"
+            android:text="Find Meaning"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/choosenWord"
+            app:layout_constraintTop_toBottomOf="@+id/image98" />
 
-    <TextView
-        android:id="@+id/choosenWord"
-        android:layout_width="184dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:textAlignment="center"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image98" />
+        <TextView
+            android:id="@+id/choosenWord"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="48dp"
+            android:fontFamily="@font/open_sans"
+            android:textAlignment="viewStart"
+            android:textColor="#292323"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image98"
+            app:layout_constraintVertical_bias="0.553" />
+
+        <TextView
+            android:id="@+id/worder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/open_sans_light"
+            android:text="SELECTED WORD"
+            android:textColor="#2B2828"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/choosenWord"
+            app:layout_constraintEnd_toEndOf="@+id/choosenWord"
+            app:layout_constraintHorizontal_bias="0.444"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image98"
+            app:layout_constraintVertical_bias="1.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
