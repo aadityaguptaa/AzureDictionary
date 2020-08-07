@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.loader.content.Loader;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.common.io.ByteStreams;
@@ -23,10 +24,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -38,6 +42,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -47,6 +52,8 @@ import org.json.JSONObject;
 import static com.example.meaning4.R.id.bottomSheet;
 import static com.example.meaning4.R.id.etydef;
 import static com.example.meaning4.R.id.etymologies;
+import static com.example.meaning4.R.id.gone;
+import static com.example.meaning4.R.id.invisible;
 import static com.example.meaning4.R.id.wordsheet;
 
 public class findMeaning extends AppCompatActivity {
@@ -62,6 +69,7 @@ public class findMeaning extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
     public String currentPhotoPath;
+    public String audioUri;
 
 
 
@@ -85,6 +93,18 @@ public class findMeaning extends AppCompatActivity {
             public void onClick(View v) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
+            }
+        });
+
+        ImageView audioPlay = findViewById((R.id.speaker));
+        audioPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    PlayAudioManager.playAudio(findMeaning.this, audioUri);
+                }catch (Exception e){
+                    Log.i("Errororororo", e.toString());
+                }
             }
         });
 
@@ -151,6 +171,7 @@ public class findMeaning extends AppCompatActivity {
                     JSONArray audioLinkarray = etye.getJSONArray("pronunciations");
                     JSONObject audioLinkObject = audioLinkarray.getJSONObject(0);
                     String audioLink = audioLinkObject.getString("audioFile");
+                    audioUri = audioLink;
                     JSONArray definitionarray = etye.getJSONArray("senses");
                     JSONObject definitionObject = definitionarray.getJSONObject(0);
                     JSONArray firstdefArr = definitionObject.getJSONArray("definitions");
@@ -237,12 +258,19 @@ public class findMeaning extends AppCompatActivity {
                 mSelectedImage = Bitmap.createScaledBitmap(bitmap, im.getWidth(), im.getHeight(), true);
                 im.setImageBitmap(mSelectedImage);
 
-                AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                    @SuppressLint("WrongThread")
                     @Override
                     protected Void doInBackground(Void... voids) {
+                        ProgressBar progressBar = findViewById(R.id.indeterminateBar);
+
+                        progressBar.setVisibility(View.VISIBLE);
+                        progressBar.setProgress(5);
                         ComputerVisionClient compVisClient = ComputerVisionManager.authenticate(subscriptionKey).withEndpoint(endpoint);
                         Log.i("a", "\nAzure Cognitive Services Computer Vision - Java Quickstart Sample");
                         RecognizeTextOCRLocal(compVisClient);
+                        progressBar.setVisibility(View.INVISIBLE);
+
                         return null;
                     }
                 };
@@ -303,9 +331,9 @@ public class findMeaning extends AppCompatActivity {
         try {
             byte[] localImageBytes = ByteStreams.toByteArray(inputStream);
 
-            // Recognize printed text in local image
             OcrResult ocrResultLocal = client.computerVision().recognizePrintedTextInStream()
                     .withDetectOrientation(true).withImage(localImageBytes).withLanguage(OcrLanguages.EN).execute();
+
             Log.i("a", "\n");
             Log.i("a", "Recognizing printed text from a local image with OCR ...");
             Log.i("a", "\nLanguage: " + ocrResultLocal.language());
@@ -338,6 +366,7 @@ public class findMeaning extends AppCompatActivity {
                     }
                     Log.i("a", "\n");
                 }
+
             }
         }catch (Exception e){
             Log.i("a", e.toString());

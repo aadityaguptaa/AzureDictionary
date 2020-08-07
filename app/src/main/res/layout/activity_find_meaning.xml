@@ -10,6 +10,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFFFF">
@@ -92,6 +93,22 @@
             app:layout_constraintTop_toBottomOf="@+id/choosenWord"
             app:layout_constraintVertical_bias="1.0"
             app:srcCompat="@drawable/ic_add_black_48dp" />
+
+        <ProgressBar
+            android:id="@+id/indeterminateBar"
+            style="@android:style/Widget.Material.Light.ProgressBar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="#00FFFFFF"
+            android:indeterminate="true"
+            android:indeterminateTint="#110106"
+            android:indeterminateTintMode="src_atop"
+            android:progressBackgroundTintMode="multiply"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/image98" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
