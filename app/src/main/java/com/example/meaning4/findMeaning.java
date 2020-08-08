@@ -28,6 +28,7 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -64,7 +65,6 @@ public class findMeaning extends AppCompatActivity {
     List<List<Integer>> listOfLists = new ArrayList<>();
     List<String> listOfWords = new ArrayList<>();
     public int selectedInt;
-    public String selectedString;
     public Bitmap mSelectedImage;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
@@ -84,6 +84,30 @@ public class findMeaning extends AppCompatActivity {
         int[] viewCoords = new int[2];
         imageView.getLocationOnScreen(viewCoords);
         Log.i("coords", viewCoords[0]+"   "+viewCoords[1]);
+
+        TextView knowmore = findViewById(R.id.knowmore);
+        knowmore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://"));
+                final ResolveInfo resolveInfo = getApplicationContext().getPackageManager()
+                        .resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                String defaultBrowserPackageName = resolveInfo.activityInfo.packageName;
+
+                String url = "https://www.oxfordlearnersdictionaries.com/definition/english/"+listOfWords.get(selectedInt);
+                final Intent intent2 = new Intent(Intent.ACTION_VIEW);
+                intent2.setData(Uri.parse(url));
+
+                if (!defaultBrowserPackageName.equals("android")){
+                    // android = no default browser is set
+                    // (android < 6 or fresh browser install or simply no default set)
+                    // if it's the case (not in this block), it will just use normal way.
+                    intent2.setPackage(defaultBrowserPackageName);
+                }
+
+                startActivity(intent2);
+            }
+        });
 
         View bottomSheet = findViewById(R.id.bottomSheet);
         final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -119,6 +143,8 @@ public class findMeaning extends AppCompatActivity {
         cameraClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ImageView tapHere = findViewById(R.id.tapHere);
+                tapHere.setVisibility(View.INVISIBLE);
                 String fileName = "photo";
                 File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
