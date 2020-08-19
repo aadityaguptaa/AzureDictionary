@@ -77,11 +77,12 @@ public class findMeaning extends AppCompatActivity {
     List<String> listOfWords = new ArrayList<>();
     public int selectedInt;
     public Bitmap mSelectedImage;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
     public String currentPhotoPath;
     public String audioUri;
-    private static final int TEXT_COLOR = Color.WHITE;
+    private final int TEXT_COLOR = Color.WHITE;
+    public int lineCount;
 
 
 
@@ -296,7 +297,6 @@ public class findMeaning extends AppCompatActivity {
                 final ImageView im = findViewById(R.id.image98);
                 mSelectedImage = Bitmap.createScaledBitmap(bitmap, im.getWidth(), im.getHeight(), true);
                 im.setImageBitmap(mSelectedImage);
-
                 @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
                     @SuppressLint("WrongThread")
                     @Override
@@ -309,12 +309,11 @@ public class findMeaning extends AppCompatActivity {
                         Log.i("a", "\nAzure Cognitive Services Computer Vision - Java Quickstart Sample");
                         String resultString = RecognizeTextOCRLocal(compVisClient);
                         Bitmap bop = drawMultilineTextToBitmap(getApplicationContext(), R.drawable.ggg,  resultString);
-                        Bitmap ii = Bitmap.createScaledBitmap(bop, mSelectedImage.getWidth(), mSelectedImage.getHeight(), false);
                         Log.i("size", mSelectedImage.getHeight() + " " + mSelectedImage.getWidth());
                         Log.i("size", resultString);
-                        Log.i("size", ii.getHeight() + " " + ii.getWidth());
-                        im.setImageBitmap(ii);
-                            progressBar.setVisibility(View.INVISIBLE);
+                        Log.i("size", bop.getHeight() + " " + bop.getWidth());
+                        im.setImageBitmap(bop);
+                        progressBar.setVisibility(View.INVISIBLE);
 
 
 
@@ -390,10 +389,19 @@ public class findMeaning extends AppCompatActivity {
 
 
             boolean firstWord = true;
-            String res = "";
+            String res = new String();
+            int flag = 0;
+            lineCount = 0;
             for (OcrRegion reg : ocrResultLocal.regions()) {
 
                 for (OcrLine line : reg.lines()) {
+                    lineCount+=1;
+                    if(flag == 0 && line.words().size() == 1){
+                        continue;
+                    }else {
+                        flag = 1;
+                    }
+
                     for (OcrWord word : line.words()) {
                         List<Integer> innerList = new ArrayList<>();
                         String[] st = word.boundingBox().split(",");
@@ -403,7 +411,7 @@ public class findMeaning extends AppCompatActivity {
                         innerList.add(Integer.valueOf(st[1]) + Integer.valueOf(st[3]));
                         listOfLists.add(innerList);
                         if (firstWord) {
-                            Log.i("a", "\nFirst word in first line is \"" + word.text()
+                            Log.i("atryu", "\nFirst word in first line is \"" + word.text()
                                     + "\" with  bounding box: " + word.boundingBox());
                             firstWord = false;
                             Log.i("a", "\n");
@@ -412,10 +420,15 @@ public class findMeaning extends AppCompatActivity {
                         listOfWords.add(word.text());
                         res += word.text() + " ";
                     }
+                    res += "\n";
                     Log.i("a", "\n");
+
                 }
 
+
             }
+            Log.i("resultuyt", res);
+            Log.i("lineCount", lineCount+"");
             return res;
         }catch (Exception e){
             Log.i("a", e.toString());
@@ -465,14 +478,9 @@ public class findMeaning extends AppCompatActivity {
         // prepare canvas
         Resources resources = gContext.getResources();
         float scale = resources.getDisplayMetrics().density;
-        Bitmap bitmap = BitmapFactory.decodeResource(resources, gResId);
+        Bitmap bitmap;
 
-        android.graphics.Bitmap.Config bitmapConfig = bitmap.getConfig();
-        // set default bitmap config if none
-        if(bitmapConfig == null) {
-            bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
-        }
-        // resource bitmaps are imutable,
+
         // so we need to convert it to mutable one
         bitmap = Bitmap.createBitmap(1080, 1404, Bitmap.Config.RGB_565);
 
@@ -484,7 +492,8 @@ public class findMeaning extends AppCompatActivity {
         // text color - #3D3D3D
         paint.setColor(TEXT_COLOR);
         // text size in pixels
-        paint.setTextSize((int) (14 * scale));
+        Log.i("list", listOfWords.size() + "");
+        paint.setTextSize((int) (14.5 * scale));
         // text shadow
 
         // set text width to canvas width minus 16dp padding
@@ -492,7 +501,7 @@ public class findMeaning extends AppCompatActivity {
 
         // init StaticLayout for text
         StaticLayout textLayout = new StaticLayout(
-                gText, paint, textWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 0.0f, false);
+                gText, paint, textWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
 
         // get height of multiline text
         int textHeight = textLayout.getHeight();
@@ -509,5 +518,28 @@ public class findMeaning extends AppCompatActivity {
 
         return bitmap;
     }
+
+    public String removeSpecialCharacter(String s)
+    {
+        for (int i = 0; i < s.length(); i++)
+        {
+
+            // Finding the character whose
+            // ASCII value fall under this
+            // range
+            if (s.charAt(i) < 'A' || s.charAt(i) > 'Z' &&
+                    s.charAt(i) < 'a' || s.charAt(i) > 'z')
+            {
+
+                // erase function to erase
+                // the character
+                s = s.substring(0, i) + s.substring(i + 1);
+                i--;
+            }
+        }
+        return s;
+    }
+
+
 
 }
