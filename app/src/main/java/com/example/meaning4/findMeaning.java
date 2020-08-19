@@ -9,8 +9,10 @@ import androidx.loader.content.Loader;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.common.io.ByteStreams;
+
 import com.microsoft.azure.cognitiveservices.vision.computervision.*;
 import com.microsoft.azure.cognitiveservices.vision.computervision.models.*;
+
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,18 +28,26 @@ import java.util.concurrent.ExecutionException;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.SyncStateContract;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -50,6 +60,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 import static com.example.meaning4.R.id.bottomSheet;
 import static com.example.meaning4.R.id.etydef;
 import static com.example.meaning4.R.id.etymologies;
@@ -70,6 +81,8 @@ public class findMeaning extends AppCompatActivity {
     static final int REQUEST_TAKE_PHOTO = 1;
     public String currentPhotoPath;
     public String audioUri;
+    private static final int TEXT_COLOR = Color.WHITE;
+
 
 
 
@@ -159,7 +172,7 @@ public class findMeaning extends AppCompatActivity {
                 }catch (IOException e){
                     e.printStackTrace();
                 }
-            }
+                      }
         });
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -277,10 +290,10 @@ public class findMeaning extends AppCompatActivity {
         Log.i("tyu", String.valueOf(requestCode));
 
         if (resultCode == RESULT_OK && requestCode == 1) {
-            Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath);
+            final Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath);
             if (bitmap != null) {
                 Log.i("tyu", "02");
-                ImageView im = findViewById(R.id.image98);
+                final ImageView im = findViewById(R.id.image98);
                 mSelectedImage = Bitmap.createScaledBitmap(bitmap, im.getWidth(), im.getHeight(), true);
                 im.setImageBitmap(mSelectedImage);
 
@@ -294,8 +307,17 @@ public class findMeaning extends AppCompatActivity {
                         progressBar.setProgress(5);
                         ComputerVisionClient compVisClient = ComputerVisionManager.authenticate(subscriptionKey).withEndpoint(endpoint);
                         Log.i("a", "\nAzure Cognitive Services Computer Vision - Java Quickstart Sample");
-                        RecognizeTextOCRLocal(compVisClient);
-                        progressBar.setVisibility(View.INVISIBLE);
+                        String resultString = RecognizeTextOCRLocal(compVisClient);
+                        Bitmap bop = drawMultilineTextToBitmap(getApplicationContext(), R.drawable.ggg,  resultString);
+                        Bitmap ii = Bitmap.createScaledBitmap(bop, mSelectedImage.getWidth(), mSelectedImage.getHeight(), false);
+                        Log.i("size", mSelectedImage.getHeight() + " " + mSelectedImage.getWidth());
+                        Log.i("size", resultString);
+                        Log.i("size", ii.getHeight() + " " + ii.getWidth());
+                        im.setImageBitmap(ii);
+                            progressBar.setVisibility(View.INVISIBLE);
+
+
+
 
                         return null;
                     }
@@ -340,7 +362,7 @@ public class findMeaning extends AppCompatActivity {
         return false;
     }
 
-    public void RecognizeTextOCRLocal(ComputerVisionClient client) {
+    public String RecognizeTextOCRLocal(ComputerVisionClient client) {
         Log.i("a", "-----------------------------------------------");
         Log.i("a", "RECOGNIZE PRINTED TEXT");
 
@@ -394,9 +416,11 @@ public class findMeaning extends AppCompatActivity {
                 }
 
             }
+            return res;
         }catch (Exception e){
             Log.i("a", e.toString());
         }
+        return null;
     }
 
     public int getStatusBarHeight() {
@@ -432,6 +456,58 @@ public class findMeaning extends AppCompatActivity {
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
+    }
+
+    public Bitmap drawMultilineTextToBitmap(Context gContext,
+                                            int gResId,
+                                            String gText) {
+
+        // prepare canvas
+        Resources resources = gContext.getResources();
+        float scale = resources.getDisplayMetrics().density;
+        Bitmap bitmap = BitmapFactory.decodeResource(resources, gResId);
+
+        android.graphics.Bitmap.Config bitmapConfig = bitmap.getConfig();
+        // set default bitmap config if none
+        if(bitmapConfig == null) {
+            bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
+        }
+        // resource bitmaps are imutable,
+        // so we need to convert it to mutable one
+        bitmap = Bitmap.createBitmap(1080, 1404, Bitmap.Config.RGB_565);
+
+
+        Canvas canvas = new Canvas(bitmap);
+
+        // new antialiased Paint
+        TextPaint paint=new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        // text color - #3D3D3D
+        paint.setColor(TEXT_COLOR);
+        // text size in pixels
+        paint.setTextSize((int) (14 * scale));
+        // text shadow
+
+        // set text width to canvas width minus 16dp padding
+        int textWidth = canvas.getWidth() - (int) (16 * scale);
+
+        // init StaticLayout for text
+        StaticLayout textLayout = new StaticLayout(
+                gText, paint, textWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 0.0f, false);
+
+        // get height of multiline text
+        int textHeight = textLayout.getHeight();
+
+        // get position of text's top left corner
+        float x = (bitmap.getWidth() - textWidth)/2;
+        float y = (bitmap.getHeight() - textHeight)/2;
+
+        // draw text to the Canvas center
+        canvas.save();
+        canvas.translate(x, y);
+        textLayout.draw(canvas);
+        canvas.restore();
+
+        return bitmap;
     }
 
 }
