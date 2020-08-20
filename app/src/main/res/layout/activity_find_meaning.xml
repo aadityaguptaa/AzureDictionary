@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00FFFFFF"
     app:behavior_hideable="true"
     app:behavior_peekHeight="16dp"
-    android:layout_height="match_parent"
     tools:context=".findMeaning">
 
 
@@ -13,13 +14,13 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        android:background="#000000">
 
         <ImageView
             android:id="@+id/image98"
             android:layout_width="match_parent"
             android:layout_height="535dp"
-            android:scaleType="fitStart"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -36,6 +37,7 @@
             android:background="#FCFCFC"
             android:fontFamily="@font/open_sans"
             android:text="Find Meaning"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display2"
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -51,6 +53,7 @@
             android:fontFamily="@font/open_sans"
             android:textAlignment="viewStart"
             android:textColor="#292323"
+            android:textIsSelectable="true"
             android:textSize="30sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -85,7 +88,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginBottom="4dp"
             android:background="#00000000"
-            app:backgroundTint="#000000"
+            app:backgroundTint="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -123,6 +126,29 @@
             app:layout_constraintTop_toTopOf="@+id/image98"
             app:layout_constraintVertical_bias="0.866"
             app:srcCompat="@drawable/arrowpng" />
+
+        <TextView
+            android:id="@+id/finalTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:background="#000000"
+            android:fontFamily="@font/open_sans"
+            android:paddingHorizontal="5dp"
+            android:shadowColor="#DDD5D5"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:singleLine="false"
+            android:textColor="#FFFFFF"
+            android:textIsSelectable="true"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

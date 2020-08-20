@@ -81,23 +81,21 @@ public class findMeaning extends AppCompatActivity {
     static final int REQUEST_TAKE_PHOTO = 1;
     public String currentPhotoPath;
     public String audioUri;
-    private final int TEXT_COLOR = Color.WHITE;
+    private final int TEXT_COLOR = Color.BLACK;
+    private final int CANVAS_BACKGROUND_COLOR = Color.WHITE;
+    public int maxChar = 0;
+    ProgressBar progressBar;
+
     public int lineCount;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_meaning);
         Button button = findViewById(R.id.button98);
         statusBarHeight = String.valueOf(getStatusBarHeight());
         ImageView imageView = findViewById(R.id.image98);
-        int[] viewCoords = new int[2];
-        imageView.getLocationOnScreen(viewCoords);
-        Log.i("coords", viewCoords[0]+"   "+viewCoords[1]);
+
 
         TextView knowmore = findViewById(R.id.knowmore);
         knowmore.setOnClickListener(new View.OnClickListener() {
@@ -125,7 +123,7 @@ public class findMeaning extends AppCompatActivity {
 
         View bottomSheet = findViewById(R.id.bottomSheet);
         final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        Button findAnotherMeaning = findViewById(R.id.findAnotherMeaning);
+        final Button findAnotherMeaning = findViewById(R.id.findAnotherMeaning);
         findAnotherMeaning.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,6 +155,8 @@ public class findMeaning extends AppCompatActivity {
         cameraClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                TextView finalone = findViewById(R.id.finalTextView);
+                finalone.setVisibility(View.INVISIBLE);
                 ImageView tapHere = findViewById(R.id.tapHere);
                 tapHere.setVisibility(View.INVISIBLE);
                 String fileName = "photo";
@@ -275,13 +275,6 @@ public class findMeaning extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
-
-
     }
 
     @Override
@@ -293,44 +286,45 @@ public class findMeaning extends AppCompatActivity {
         if (resultCode == RESULT_OK && requestCode == 1) {
             final Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath);
             if (bitmap != null) {
+
                 Log.i("tyu", "02");
                 final ImageView im = findViewById(R.id.image98);
+                im.setVisibility(View.VISIBLE);
                 mSelectedImage = Bitmap.createScaledBitmap(bitmap, im.getWidth(), im.getHeight(), true);
                 im.setImageBitmap(mSelectedImage);
-                @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+
+                @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+                    @Override
+                    protected void onPostExecute(String s) {
+                        super.onPostExecute(s);
+                        TextView textView99 = findViewById(R.id.finalTextView);
+                        textView99.setVisibility(View.VISIBLE);
+                        TextView finalTextView = findViewById(R.id.finalTextView);
+                        finalTextView.setText(s);
+                        finalTextView.setTextSize(871/maxChar);
+                        im.setVisibility(View.INVISIBLE);
+                    }
+
                     @SuppressLint("WrongThread")
                     @Override
-                    protected Void doInBackground(Void... voids) {
+                    protected String doInBackground(Void... voids) {
                         ProgressBar progressBar = findViewById(R.id.indeterminateBar);
-
                         progressBar.setVisibility(View.VISIBLE);
                         progressBar.setProgress(5);
                         ComputerVisionClient compVisClient = ComputerVisionManager.authenticate(subscriptionKey).withEndpoint(endpoint);
-                        Log.i("a", "\nAzure Cognitive Services Computer Vision - Java Quickstart Sample");
-                        String resultString = RecognizeTextOCRLocal(compVisClient);
-                        Bitmap bop = drawMultilineTextToBitmap(getApplicationContext(), R.drawable.ggg,  resultString);
-                        Log.i("size", mSelectedImage.getHeight() + " " + mSelectedImage.getWidth());
-                        Log.i("size", resultString);
-                        Log.i("size", bop.getHeight() + " " + bop.getWidth());
-                        im.setImageBitmap(bop);
+                        String result = RecognizeTextOCRLocal(compVisClient);
+                        Bitmap bop = drawMultilineTextToBitmap(getApplicationContext(), R.drawable.ggg,  result);
                         progressBar.setVisibility(View.INVISIBLE);
 
-
-
-
-                        return null;
+                        return result;
                     }
                 };
                 task.execute();
             }
         }
-
-
-
-
     }
 
-    @Override
+    /*@Override
     public boolean onTouchEvent(MotionEvent event)
     {
         int x = (int)event.getX();
@@ -359,7 +353,7 @@ public class findMeaning extends AppCompatActivity {
         }
 
         return false;
-    }
+    }*/
 
     public String RecognizeTextOCRLocal(ComputerVisionClient client) {
         Log.i("a", "-----------------------------------------------");
@@ -392,6 +386,7 @@ public class findMeaning extends AppCompatActivity {
             String res = new String();
             int flag = 0;
             lineCount = 0;
+            maxChar = 0;
             for (OcrRegion reg : ocrResultLocal.regions()) {
 
                 for (OcrLine line : reg.lines()) {
@@ -401,7 +396,7 @@ public class findMeaning extends AppCompatActivity {
                     }else {
                         flag = 1;
                     }
-
+                    int lineChar = 0;
                     for (OcrWord word : line.words()) {
                         List<Integer> innerList = new ArrayList<>();
                         String[] st = word.boundingBox().split(",");
@@ -419,16 +414,21 @@ public class findMeaning extends AppCompatActivity {
                         Log.i("a", word.text() + " ");
                         listOfWords.add(word.text());
                         res += word.text() + " ";
+                        lineChar += word.text().length() +1;
                     }
                     res += "\n";
                     Log.i("a", "\n");
+                    if(lineChar >= maxChar){
+                        maxChar = lineChar;
+                    }
 
                 }
+                res+="\n";
 
 
             }
             Log.i("resultuyt", res);
-            Log.i("lineCount", lineCount+"");
+            Log.i("lineCount", maxChar+"");
             return res;
         }catch (Exception e){
             Log.i("a", e.toString());
@@ -487,17 +487,18 @@ public class findMeaning extends AppCompatActivity {
 
         Canvas canvas = new Canvas(bitmap);
 
+
         // new antialiased Paint
         TextPaint paint=new TextPaint(Paint.ANTI_ALIAS_FLAG);
         // text color - #3D3D3D
-        paint.setColor(TEXT_COLOR);
+        paint.setColor(CANVAS_BACKGROUND_COLOR);
         // text size in pixels
         Log.i("list", listOfWords.size() + "");
         paint.setTextSize((int) (14.5 * scale));
         // text shadow
 
         // set text width to canvas width minus 16dp padding
-        int textWidth = canvas.getWidth() - (int) (16 * scale);
+        int textWidth = canvas.getWidth() - (int) (30 * scale);
 
         // init StaticLayout for text
         StaticLayout textLayout = new StaticLayout(
