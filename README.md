@@ -4,7 +4,7 @@ In this app, the user can capture an image and then directly tap on the word the
 
 The app uses:
 Azure's Computer Vision to detect text and
-Oxford Dictionaries AP
+Oxford Dictionaries API
 
 ![alt text](https://github.com/aadityaguptaa/findMeaning/blob/master/Screenshot_20200808-221228.png)
 ![alt text](https://github.com/aadityaguptaa/findMeaning/blob/master/Screenshot_20200808-221234.png)
